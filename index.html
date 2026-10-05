@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timora - Personal Study Command Center</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            maroon: {
+              950: '#230508',
+              900: '#38080E',
+              850: '#4A0E17',
+              800: '#5E131E',
+              700: '#7A1A27',
+              600: '#9E2434',
+              500: '#C23145',
+              200: '#F6D2D6',
+              100: '#FCECEE',
+              50: '#FFF7F8',
+            },
+            oat: {
+              50: '#FFFFFF',
+              100: '#FAF8F5',
+              200: '#F4EFEA',
+              300: '#EAE2D8',
+              400: '#D5C7B7',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .circle-progress-ring {
+      background: conic-gradient(#C23145 0% 78%, rgba(255, 255, 255, 0.08) 78% 100%);
+    }
+  </style>
+</head>
+<body class="h-full bg-oat-100 text-slate-800 antialiased flex flex-col lg:flex-row overflow-x-hidden selection:bg-maroon-700 selection:text-white">
+
+  <!-- ============================================================== -->
+  <!-- 1. INTRO / ONBOARDING MODAL                                    -->
+  <!-- ============================================================== -->
+  <div id="introModal" class="fixed inset-0 z-50 flex items-center justify-center bg-maroon-950/70 p-4 backdrop-blur-md" style="display: none;">
+    <div class="relative w-full max-w-lg overflow-hidden rounded-3xl border border-oat-300 bg-white p-8 shadow-2xl">
+      <div class="flex items-center gap-3">
+        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-maroon-850 text-white shadow-md">
+          <i class="fa-solid fa-graduation-cap text-lg"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold tracking-tight text-maroon-950">Set Up Your Study Center</h2>
+          <p class="text-xs font-semibold text-maroon-700">Personalize your Timora curriculum engine</p>
+        </div>
+      </div>
+
+      <form id="introForm" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-maroon-900">Student Name</label>
+          <input 
+            id="studentName" 
+            type="text" 
+            required 
+            placeholder="e.g. Ankita"
+            class="mt-1.5 w-full rounded-xl border border-oat-300 bg-oat-100/40 px-4 py-2.5 text-sm text-slate-900 focus:border-maroon-700 focus:outline-none focus:ring-1 focus:ring-maroon-700"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-maroon-900">Academic Level</label>
+            <select 
+              id="studentLevel" 
+              class="mt-1.5 w-full rounded-xl border border-oat-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-maroon-700 focus:outline-none"
+            >
+              <option value="College (Engineering)">Engineering Undergrad</option>
+              <option value="College (Science/CS)">B.Sc / Computer Science</option>
+              <option value="Class 11 - 12">Class 11 - 12 (Board Prep)</option>
+              <option value="Class 9 - 10">Class 9 - 10</option>
+              <option value="Commerce & Management">Commerce & Management</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-maroon-900">Major / Stream</label>
+            <input 
+              id="studentMajor" 
+              type="text" 
+              placeholder="e.g. ECE, CSE"
+              class="mt-1.5 w-full rounded-xl border border-oat-300 bg-oat-100/40 px-4 py-2.5 text-sm text-slate-900 focus:border-maroon-700 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-maroon-900">Target Goal</label>
+          <input 
+            id="studentGoal" 
+            type="text" 
+            placeholder="e.g. Semester High Distinction, GATE"
+            class="mt-1.5 w-full rounded-xl border border-oat-300 bg-oat-100/40 px-4 py-2.5 text-sm text-slate-900 focus:border-maroon-700 focus:outline-none"
+          />
+        </div>
+
+        <button 
+          type="submit" 
+          class="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-maroon-850 py-3 text-sm font-bold text-white shadow-md transition hover:bg-maroon-800"
+        >
+          <span>Enter Command Center</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 2. LEFT SIDEBAR                                                -->
+  <!-- ============================================================== -->
+  <aside class="w-full lg:w-64 bg-maroon-950 text-white flex-shrink-0 flex flex-col justify-between p-6 border-b lg:border-b-0 lg:border-r border-maroon-900/60 shadow-xl">
+    <div class="space-y-8">
+      <div>
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-maroon-800 to-maroon-600 text-white shadow-md">
+            <i class="fa-solid fa-brain text-sm"></i>
+          </div>
+          <span class="text-xl font-extrabold tracking-tight text-white">Timora</span>
+        </div>
+        <p class="text-[10px] uppercase tracking-widest text-maroon-300 font-bold mt-1.5">Study Time Optimizer</p>
+      </div>
+
+      <div class="space-y-1.5">
+        <div class="text-[10px] font-extrabold uppercase tracking-wider text-maroon-400/80 mb-2.5 px-3">Workspace</div>
+        
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-maroon-850 text-white font-semibold text-xs transition text-left shadow-sm">
+          <i class="fa-solid fa-table-columns text-sm text-maroon-200"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <button onclick="switchTab('dashboard'); document.getElementById('study-hub').scrollIntoView({ behavior: 'smooth' });" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-maroon-200 hover:bg-maroon-900/70 hover:text-white font-medium text-xs transition text-left">
+          <i class="fa-solid fa-wand-magic-sparkles text-sm text-maroon-400"></i>
+          <span>AI Tutor Hub</span>
+        </button>
+
+        <button onclick="switchTab('subscription')" id="nav-subscription" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-maroon-200 hover:bg-maroon-900/70 hover:text-white font-medium text-xs transition text-left">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-crown text-sm text-amber-400"></i>
+            <span>Subscriptions</span>
+          </div>
+          <span class="text-[9px] font-extrabold uppercase bg-amber-400/20 text-amber-300 border border-amber-400/30 px-1.5 py-0.5 rounded-md">Pro</span>
+        </button>
+
+        <button onclick="switchTab('dashboard'); document.getElementById('timetable').scrollIntoView({ behavior: 'smooth' });" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-maroon-200 hover:bg-maroon-900/70 hover:text-white font-medium text-xs transition text-left">
+          <i class="fa-regular fa-calendar text-sm text-maroon-400"></i>
+          <span>Timetable</span>
+        </button>
+
+        <button onclick="switchTab('dashboard'); document.getElementById('analytics').scrollIntoView({ behavior: 'smooth' });" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-maroon-200 hover:bg-maroon-900/70 hover:text-white font-medium text-xs transition text-left">
+          <i class="fa-solid fa-chart-simple text-sm text-maroon-400"></i>
+          <span>Analytics</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="pt-6 border-t border-maroon-900/80 space-y-4">
+      <button onclick="openProfileEdit()" class="flex items-center gap-3 text-maroon-300 hover:text-white text-xs font-semibold px-2 transition">
+        <i class="fa-solid fa-gear"></i> Settings
+      </button>
+
+      <div class="flex items-center gap-3 bg-maroon-900/60 p-2.5 rounded-2xl border border-maroon-850">
+        <div class="w-8 h-8 rounded-full bg-maroon-800 text-white flex items-center justify-center font-bold text-xs shadow-inner">
+          <i class="fa-regular fa-user"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h4 id="sidebarName" class="text-xs font-bold text-white truncate">Ankita</h4>
+          <p id="sidebarMajor" class="text-[10px] font-medium text-maroon-300 truncate">ECE</p>
+        </div>
+        <button onclick="openProfileEdit()" class="text-maroon-400 hover:text-white text-xs p-1">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================== -->
+  <!-- 3. MAIN WORKSPACE VIEW ROUTER                                  -->
+  <!-- ============================================================== -->
+  <div class="flex-1 overflow-y-auto">
+
+    <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+    <div id="view-dashboard" class="p-4 sm:p-8 lg:p-10 space-y-8 max-w-7xl">
+      <!-- Top Header Bar -->
+      <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p class="text-[10px] font-extrabold uppercase tracking-widest text-maroon-700">Personal Study Command Center</p>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-oat-300 text-xs font-semibold text-slate-600 shadow-sm">
+            <i class="fa-regular fa-calendar text-maroon-700"></i>
+            <span id="currentDateDisplay">Oct 5, 2026</span>
+          </div>
+          <button onclick="switchTab('subscription')" class="inline-flex items-center gap-1.5 bg-maroon-850 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-maroon-800 shadow-sm transition">
+            <i class="fa-solid fa-crown text-amber-300 text-xs"></i>
+            <span>Upgrade</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero Card: "Make every study minute count." -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-maroon-950 via-maroon-900 to-maroon-850 p-6 sm:p-10 text-white shadow-2xl">
+        <div class="pointer-events-none absolute right-16 -top-10 h-72 w-72 rounded-full bg-maroon-600/25 blur-3xl"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+          <div class="max-w-xl">
+            <div class="inline-flex items-center gap-2 rounded-full border border-maroon-700/80 bg-maroon-900/60 px-3 py-1 text-xs font-semibold text-oat-200">
+              <i class="fa-solid fa-bolt text-amber-400"></i> SMART STUDY PLANNER
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mt-4 text-white leading-tight">
+              Make every <span class="text-maroon-200">study minute</span> count.
+            </h2>
+            <p class="mt-3 text-xs sm:text-sm text-oat-200/90 leading-relaxed font-normal">
+              Timora turns your subjects, deadlines, and available syllabus topics into a smarter, balanced revision schedule.
+            </p>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <button onclick="document.getElementById('study-hub').scrollIntoView({ behavior: 'smooth' })" class="inline-flex items-center gap-2 rounded-xl bg-maroon-600 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-maroon-500 transition">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Curate Topic Pack
+              </button>
+              <button onclick="document.getElementById('timetable').scrollIntoView({ behavior: 'smooth' })" class="inline-flex items-center gap-2 rounded-xl border border-maroon-700 bg-maroon-900/50 px-4 py-2.5 text-xs font-semibold text-oat-100 hover:bg-maroon-900 transition">
+                <i class="fa-regular fa-calendar-check"></i> View Timetable
+              </button>
+            </div>
+          </div>
+
+          <!-- Circular Focus Widget -->
+          <div class="flex items-center justify-center md:justify-end">
+            <div class="relative flex h-40 w-40 items-center justify-center rounded-full circle-progress-ring p-2.5 shadow-inner">
+              <div class="flex h-full w-full flex-col items-center justify-center rounded-full bg-maroon-950 text-center">
+                <i class="fa-solid fa-brain text-maroon-400 text-lg mb-1"></i>
+                <span class="text-2xl font-black text-white">78%</span>
+                <span class="text-[9px] uppercase tracking-wider text-oat-300 font-semibold">Optimized</span>
+              </div>
+              <div class="absolute -bottom-2 -right-2 rounded-xl bg-maroon-900/95 border border-maroon-700 px-3 py-1.5 text-right shadow-lg">
+                <div class="text-[9px] text-oat-300 font-medium">Focus today</div>
+                <div class="text-xs font-black text-white">3h 25m <i class="fa-solid fa-arrow-trend-up text-[10px] text-emerald-400"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 Key Stat Cards -->
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Study Time -->
+        <div class="bg-white rounded-2xl p-5 border border-oat-300 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Study Time</div>
+            <div class="text-xl font-extrabold text-maroon-950 mt-1">3h 25m</div>
+            <div class="text-[10px] font-semibold text-emerald-600 mt-0.5">+42 min today</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-maroon-50 text-maroon-800 flex items-center justify-center text-sm">
+            <i class="fa-regular fa-clock"></i>
+          </div>
+        </div>
+
+        <!-- Completed -->
+        <div class="bg-white rounded-2xl p-5 border border-oat-300 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Completed</div>
+            <div class="text-xl font-extrabold text-maroon-950 mt-1">68%</div>
+            <div class="text-[10px] font-medium text-slate-500 mt-0.5">12 / 18 tasks</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-maroon-50 text-maroon-800 flex items-center justify-center text-sm">
+            <i class="fa-regular fa-circle-check"></i>
+          </div>
+        </div>
+
+        <!-- Subjects -->
+        <div class="bg-white rounded-2xl p-5 border border-oat-300 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Subjects</div>
+            <div class="text-xl font-extrabold text-maroon-950 mt-1">4</div>
+            <div class="text-[10px] font-medium text-slate-500 mt-0.5">Active syllabus</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-maroon-50 text-maroon-800 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+        </div>
+
+        <!-- Streak -->
+        <div class="bg-white rounded-2xl p-5 border border-oat-300 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Streak</div>
+            <div class="text-xl font-extrabold text-maroon-950 mt-1">5 days</div>
+            <div class="text-[10px] font-semibold text-amber-600 mt-0.5">Keep going 🔥</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-maroon-50 text-maroon-800 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-fire"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Timetable + Progress -->
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div id="timetable" class="lg:col-span-2 bg-white rounded-3xl p-6 border border-oat-300 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Today's Timetable</h3>
+              <p class="text-xs text-slate-400">Your optimized study sessions</p>
+            </div>
+            <button class="text-slate-400 hover:text-slate-600 text-xs">
+              <i class="fa-solid fa-ellipsis"></i>
+            </button>
+          </div>
+
+          <div class="space-y-3 pt-2">
+            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-oat-100/70 border border-oat-200">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-semibold text-slate-400 w-12">08:00</span>
+                <div class="w-2 h-2 rounded-full bg-maroon-700"></div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900">Linked List Practice</h4>
+                  <p class="text-[10px] text-slate-500">Data Structures & Algorithms</p>
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-maroon-800 bg-maroon-100/70 px-2.5 py-1 rounded-lg">60 min</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-2xl border border-dashed border-oat-300 text-slate-400">
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-400 w-12">10:00</span>
+                <div class="w-2 h-2 rounded-full bg-slate-300"></div>
+                <span class="text-xs font-medium">Recharge / Short Break</span>
+              </div>
+              <span class="text-[11px] font-medium">20 min</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-oat-100/70 border border-oat-200">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-semibold text-slate-400 w-12">10:30</span>
+                <div class="w-2 h-2 rounded-full bg-maroon-700"></div>
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900">Kirchhoff's Voltage Law & Circuits</h4>
+                  <p class="text-[10px] text-slate-500">Electronics & Network Theory</p>
+                </div>
+              </div>
+              <span class="text-[11px] font-bold text-maroon-800 bg-maroon-100/70 px-2.5 py-1 rounded-lg">75 min</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="analytics" class="bg-white rounded-3xl p-6 border border-oat-300 shadow-sm flex flex-col justify-between space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Weekly Progress</h3>
+              <p class="text-xs text-slate-400">Your study activity</p>
+            </div>
+            <button class="text-slate-400 hover:text-slate-600 text-xs">
+              <i class="fa-solid fa-ellipsis"></i>
+            </button>
+          </div>
+
+          <div>
+            <div class="text-2xl font-black text-maroon-950">12h 40m</div>
+            <div class="text-xs font-bold text-emerald-600 mt-1 flex items-center gap-1">
+              <i class="fa-solid fa-arrow-trend-up"></i> +18% <span class="text-slate-400 font-normal">total this week</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-7 gap-2 items-end h-28 pt-4">
+            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+              <div class="w-full bg-maroon-100 rounded-t-lg h-[40%]"></div>
+              <span class="text-[10px] font-bold text-slate-400">M</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+              <div class="w-full bg-maroon-100 rounded-t-lg h-[65%]"></div>
+              <span class="text-[10px] font-bold text-slate-400">T</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+              <div class="w-full bg-maroon-850 rounded-t-lg h-[90%]"></div>
+              <span class="text-[10px] font-bold text-maroon-850">W</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+              <div class="w-full bg-maroon-100 rounded-t-lg h-[50%]"></div>
+              <span class="text-[10px] font-bold text-slate-400">T</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+              <div class="w-full bg-maroon-100 rounded-t-lg h-[75%]"></div>
+              <span class="text-[10px] font-bold text-slate-400">F</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+              <div class="w-full bg-maroon-100 rounded-t-lg h-[30%]"></div>
+              <span class="text-[10px] font-bold text-slate-400">S</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+              <div class="w-full bg-maroon-100 rounded-t-lg h-[20%]"></div>
+              <span class="text-[10px] font-bold text-slate-400">S</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Tutor Search Studio -->
+      <section id="study-hub" class="bg-white rounded-3xl p-6 sm:p-8 border border-oat-300 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-oat-200 pb-4">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-maroon-700">AI Topic & Video Synthesizer</span>
+            <h3 class="text-xl font-bold text-slate-900">Curate Lectures & Reference Materials</h3>
+          </div>
+          <span class="text-xs text-slate-400">Instant syllabus search</span>
+        </div>
+
+        <form id="studyForm" class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-xs text-slate-400"></i>
+            <input 
+              id="topicInput" 
+              type="text" 
+              required 
+              placeholder="Type any topic (e.g. Kirchhoff's Voltage Law, Merge Sort, MOSFETs)..."
+              class="w-full rounded-2xl border border-oat-300 bg-oat-100/60 py-3 pl-11 pr-4 text-xs font-medium text-slate-900 focus:border-maroon-700 focus:bg-white focus:outline-none"
+            />
+          </div>
+
+          <select 
+            id="levelSelect" 
+            class="rounded-2xl border border-oat-300 bg-oat-100/60 px-4 py-3 text-xs font-semibold text-slate-700 focus:border-maroon-700 focus:outline-none"
+          >
+            <option value="College (Engineering)">Undergrad Engineering</option>
+            <option value="College (Science/CS)">B.Sc / Computer Science</option>
+            <option value="Class 11 - 12">Class 11 - 12 (Board)</option>
+            <option value="Class 9 - 10">Class 9 - 10</option>
+          </select>
+
+          <button 
+            type="submit" 
+            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-maroon-850 px-6 py-3 text-xs font-bold text-white shadow-md hover:bg-maroon-800 transition"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Curate
+          </button>
+        </form>
+
+        <div id="loading" class="hidden text-center py-8">
+          <i class="fa-solid fa-spinner fa-spin text-2xl text-maroon-700"></i>
+          <p class="mt-2 text-xs font-semibold text-slate-500">Curating videos and formula sheets...</p>
+        </div>
+
+        <div id="results" class="mt-6 gap-6" style="display: none;">
+          <div class="space-y-6 lg:col-span-2">
+            <div class="rounded-2xl border border-oat-300 bg-oat-100/70 p-5">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-maroon-800 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb"></i> Concept Overview
+              </h4>
+              <p id="summaryText" class="mt-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed"></p>
+            </div>
+
+            <div class="rounded-2xl border border-oat-300 bg-oat-100/70 p-5">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-2">
+                <i class="fa-solid fa-list-check"></i> Must-Know Checkpoints
+              </h4>
+              <ul id="conceptsList" class="mt-3 space-y-2 text-xs text-slate-700"></ul>
+            </div>
+
+            <div class="rounded-2xl border border-oat-300 bg-oat-100/70 p-5">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-red-700 flex items-center gap-2">
+                <i class="fa-brands fa-youtube"></i> Recommended Video Lectures
+              </h4>
+              <div id="videoContainer" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="rounded-2xl border border-oat-300 bg-oat-100/70 p-5">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-maroon-800 flex items-center gap-2">
+                <i class="fa-solid fa-book-bookmark"></i> Authoritative Notes & Reads
+              </h4>
+              <div id="materialsContainer" class="mt-3 space-y-2.5"></div>
+            </div>
+
+            <div class="rounded-2xl border border-maroon-200 bg-maroon-50/50 p-5">
+              <h5 class="text-xs font-bold uppercase tracking-wider text-maroon-900 flex items-center gap-2">
+                <i class="fa-solid fa-bullseye"></i> Exam Tip
+              </h5>
+              <p class="text-xs text-maroon-800/90 mt-2 leading-relaxed">
+                Solve at least 2 numerical problems immediately after watching the lecture to reinforce step derivation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== VIEW 2: SUBSCRIPTION PAGE ==================== -->
+    <div id="view-subscription" class="p-4 sm:p-8 lg:p-10 space-y-10 max-w-7xl" style="display: none;">
+      <div class="text-center max-w-2xl mx-auto space-y-3">
+        <div class="inline-flex items-center gap-2 rounded-full border border-maroon-200 bg-maroon-50 px-3.5 py-1 text-xs font-bold text-maroon-800">
+          <i class="fa-solid fa-crown text-amber-500"></i> UNLIMITED ACADEMIC INTELLIGENCE
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          Supercharge your study velocity
+        </h1>
+        <p class="text-sm text-slate-600">
+          Get unlimited AI video curations, automated semester timetables, step-by-step problem solvers, and downloadable formula books.
+        </p>
+
+        <div class="pt-4 flex items-center justify-center gap-3">
+          <span id="label-monthly" class="text-xs font-bold text-maroon-950">Monthly</span>
+          <button id="billingToggle" onclick="toggleBilling()" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-maroon-850 transition-colors duration-200 ease-in-out focus:outline-none">
+            <span id="toggleCircle" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+          </button>
+          <span id="label-yearly" class="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+            <span>Yearly</span>
+            <span class="rounded-full bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 font-extrabold">Save 25%</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+        <!-- Scholar Starter -->
+        <div class="rounded-3xl border border-oat-300 bg-white p-7 shadow-sm flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-slate-900">Scholar Starter</h3>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">Free</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">Fundamental study tools for school and college syllabus discovery.</p>
+            <div class="pt-2">
+              <span class="text-3xl font-extrabold text-slate-900">$0</span>
+              <span class="text-xs text-slate-400 font-medium"> / forever</span>
+            </div>
+
+            <ul class="space-y-3 pt-4 border-t border-oat-200 text-xs text-slate-600">
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>5 AI topic curations / day</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Curated YouTube lecture searches</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Standard study timetable tracking</span>
+              </li>
+              <li class="flex items-center gap-2.5 text-slate-400 line-through">
+                <i class="fa-solid fa-xmark"></i>
+                <span>Step-by-step math derivation solver</span>
+              </li>
+              <li class="flex items-center gap-2.5 text-slate-400 line-through">
+                <i class="fa-solid fa-xmark"></i>
+                <span>Exportable exam cheat sheet PDFs</span>
+              </li>
+            </ul>
+          </div>
+
+          <button class="w-full rounded-2xl border border-oat-300 bg-oat-100/60 py-3 text-xs font-bold text-slate-700 transition hover:bg-oat-200">
+            Current Plan
+          </button>
+        </div>
+
+        <!-- Timora Pro -->
+        <div class="relative rounded-3xl border-2 border-maroon-700 bg-white p-7 shadow-2xl flex flex-col justify-between space-y-6">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-maroon-850 px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-md">
+            Most Popular
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-maroon-900">Timora Pro</h3>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-maroon-700 bg-maroon-100 px-2 py-0.5 rounded-md">Full AI Suite</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">Complete autonomous curriculum curation, equation breakdown, and adaptive timetabling.</p>
+            <div class="pt-2">
+              <span id="pro-price" class="text-4xl font-extrabold text-maroon-950">$6</span>
+              <span id="pro-period" class="text-xs text-slate-500 font-medium"> / month (billed yearly)</span>
+            </div>
+
+            <ul class="space-y-3 pt-4 border-t border-oat-200 text-xs text-slate-700">
+              <li class="flex items-center gap-2.5 font-semibold text-maroon-900">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Unlimited AI topic curations</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Direct YouTube lecture previews & filters</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Step-by-step problem & circuit solver</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Exportable formula sheets & revision PDFs</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Automated weekly schedule sync & streak alerts</span>
+              </li>
+            </ul>
+          </div>
+
+          <button onclick="alert('Upgraded to Timora Pro demo mode!')" class="w-full rounded-2xl bg-maroon-850 py-3.5 text-xs font-bold text-white shadow-md transition hover:bg-maroon-800 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Upgrade to Pro</span>
+          </button>
+        </div>
+
+        <!-- Campus Cohort -->
+        <div class="rounded-3xl border border-oat-300 bg-white p-7 shadow-sm flex flex-col justify-between space-y-6">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-slate-900">Campus Cohort</h3>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-maroon-800 bg-maroon-50 px-2 py-0.5 rounded-md">Teams</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-relaxed">For study clubs, batchmates, and lab groups collaborating on course repos.</p>
+            <div class="pt-2">
+              <span id="campus-price" class="text-3xl font-extrabold text-slate-900">$18</span>
+              <span id="campus-period" class="text-xs text-slate-400 font-medium"> / month (up to 5 users)</span>
+            </div>
+
+            <ul class="space-y-3 pt-4 border-t border-oat-200 text-xs text-slate-600">
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Everything in Timora Pro</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Shared group timetables & milestone tracking</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Collaborative notes repository</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i class="fa-solid fa-check text-emerald-600"></i>
+                <span>Priority response times for technical models</span>
+              </li>
+            </ul>
+          </div>
+
+          <button onclick="alert('Campus Team Contacted!')" class="w-full rounded-2xl border border-maroon-850 bg-white py-3 text-xs font-bold text-maroon-850 transition hover:bg-maroon-50">
+            Get Campus Cohort
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- 4. APP INTERACTIVITY SCRIPT                                    -->
+  <!-- ============================================================== -->
+  <script>
+    const state = {
+      name: localStorage.getItem('timora_name') || 'Ankita',
+      level: localStorage.getItem('timora_level') || 'College (Engineering)',
+      major: localStorage.getItem('timora_major') || 'ECE',
+      goal: localStorage.getItem('timora_goal') || 'Semester Distinction',
+      isYearly: true
+    };
+
+    const introModal = document.getElementById('introModal');
+    const introForm = document.getElementById('introForm');
+    const sidebarName = document.getElementById('sidebarName');
+    const sidebarMajor = document.getElementById('sidebarMajor');
+
+    const studyForm = document.getElementById('studyForm');
+    const topicInput = document.getElementById('topicInput');
+    const levelSelect = document.getElementById('levelSelect');
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+
+    function switchTab(tab) {
+      const viewDashboard = document.getElementById('view-dashboard');
+      const viewSubscription = document.getElementById('view-subscription');
+      const navDashboard = document.getElementById('nav-dashboard');
+      const navSubscription = document.getElementById('nav-subscription');
+
+      if (tab === 'subscription') {
+        viewDashboard.style.display = 'none';
+        viewSubscription.style.display = 'block';
+
+        navSubscription.classList.add('bg-maroon-850', 'text-white');
+        navSubscription.classList.remove('text-maroon-200');
+
+        navDashboard.classList.remove('bg-maroon-850', 'text-white');
+        navDashboard.classList.add('text-maroon-200');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        viewSubscription.style.display = 'none';
+        viewDashboard.style.display = 'block';
+
+        navDashboard.classList.add('bg-maroon-850', 'text-white');
+        navDashboard.classList.remove('text-maroon-200');
+
+        navSubscription.classList.remove('bg-maroon-850', 'text-white');
+        navSubscription.classList.add('text-maroon-200');
+      }
+    }
+
+    function toggleBilling() {
+      state.isYearly = !state.isYearly;
+      const circle = document.getElementById('toggleCircle');
+      const proPrice = document.getElementById('pro-price');
+      const proPeriod = document.getElementById('pro-period');
+      const campusPrice = document.getElementById('campus-price');
+      const labelMonthly = document.getElementById('label-monthly');
+      const labelYearly = document.getElementById('label-yearly');
+
+      if (state.isYearly) {
+        circle.classList.add('translate-x-5');
+        circle.classList.remove('translate-x-0');
+        proPrice.innerText = '$6';
+        proPeriod.innerText = ' / month (billed yearly)';
+        campusPrice.innerText = '$18';
+        labelYearly.classList.add('text-maroon-950');
+        labelYearly.classList.remove('text-slate-500');
+        labelMonthly.classList.remove('text-maroon-950');
+        labelMonthly.classList.add('text-slate-500');
+      } else {
+        circle.classList.remove('translate-x-5');
+        circle.classList.add('translate-x-0');
+        proPrice.innerText = '$8';
+        proPeriod.innerText = ' / month (billed monthly)';
+        campusPrice.innerText = '$24';
+        labelMonthly.classList.add('text-maroon-950');
+        labelMonthly.classList.remove('text-slate-500');
+        labelYearly.classList.remove('text-maroon-950');
+        labelYearly.classList.add('text-slate-500');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      const options = { month: 'short', day: 'numeric', year: 'numeric' };
+      document.getElementById('currentDateDisplay').innerText = today.toLocaleDateString('en-US', options);
+
+      if (!localStorage.getItem('timora_name')) {
+        introModal.style.display = 'flex';
+      } else {
+        introModal.style.display = 'none';
+        syncProfile();
+      }
+    });
+
+    introForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      state.name = document.getElementById('studentName').value.trim() || 'Ankita';
+      state.level = document.getElementById('studentLevel').value;
+      state.major = document.getElementById('studentMajor').value.trim() || 'ECE';
+      state.goal = document.getElementById('studentGoal').value.trim() || 'Excellence';
+
+      localStorage.setItem('timora_name', state.name);
+      localStorage.setItem('timora_level', state.level);
+      localStorage.setItem('timora_major', state.major);
+      localStorage.setItem('timora_goal', state.goal);
+
+      introModal.style.display = 'none';
+      syncProfile();
+    });
+
+    function syncProfile() {
+      if (sidebarName) sidebarName.innerText = state.name;
+      if (sidebarMajor) sidebarMajor.innerText = state.major;
+      if (levelSelect) levelSelect.value = state.level;
+    }
+
+    function openProfileEdit() {
+      document.getElementById('studentName').value = state.name;
+      document.getElementById('studentLevel').value = state.level;
+      document.getElementById('studentMajor').value = state.major;
+      document.getElementById('studentGoal').value = state.goal;
+      introModal.style.display = 'flex';
+    }
+
+    studyForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const topic = topicInput.value.trim();
+      const level = levelSelect.value;
+      if (!topic) return;
+
+      loading.classList.remove('hidden');
+      results.style.display = 'none';
+
+      const encodedTopic = encodeURIComponent(topic);
+      const ytQuery = encodeURIComponent(`${topic} ${level} lecture full tutorial`);
+
+      setTimeout(() => {
+        document.getElementById('summaryText').innerText = 
+          `Comprehensive study module compiled for "${topic}" configured for ${level}. This curriculum pack emphasizes analytical definitions, canonical boundary rules, system proofs, and standard test problems.`;
+
+        const concepts = [
+          `Fundamental operational laws, circuit/code representations, and notation standards for ${topic}.`,
+          `Detailed mathematical proofs, transfer characteristics, and system equilibrium conditions.`,
+          `High-frequency numerical problem types, typical trap cases, and common test pitfalls.`
+        ];
+        document.getElementById('conceptsList').innerHTML = concepts
+          .map(c => `
+            <li class="flex items-start gap-2 bg-white p-2.5 rounded-xl border border-oat-300">
+              <span class="text-maroon-700 font-bold">✓</span>
+              <span>${c}</span>
+            </li>
+          `).join('');
+
+        const videos = [
+          {
+            title: `${topic} Full Syllabus Lecture`,
+            channel: "YouTube Academic Series",
+            desc: "Complete conceptual walk-through tailored for rapid revision.",
+            url: `https://www.youtube.com/results?search_query=${ytQuery}`
+          },
+          {
+            title: `${topic} Solved Numerical Problems`,
+            channel: "Problem Walkthrough",
+            desc: "Step-by-step problem set solutions and exam question analysis.",
+            url: `https://www.youtube.com/results?search_query=${encodedTopic}+solved+examples+questions`
+          }
+        ];
+        document.getElementById('videoContainer').innerHTML = videos
+          .map(v => `
+            <a href="${v.url}" target="_blank" rel="noopener noreferrer" class="block border border-oat-300 rounded-xl p-3.5 bg-white hover:border-maroon-600 transition shadow-sm">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-red-600">${v.channel}</span>
+              <h5 class="mt-1 font-bold text-xs text-slate-900 line-clamp-1">${v.title}</h5>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2">${v.desc}</p>
+              <span class="mt-2.5 inline-flex items-center gap-1 text-[11px] font-bold text-maroon-700">
+                <span>Watch Video</span> &rarr;
+              </span>
+            </a>
+          `).join('');
+
+        const materials = [
+          {
+            title: `${topic} Technical Encyclopedia`,
+            desc: "Authoritative notes and theoretical derivations.",
+            url: `https://en.wikipedia.org/wiki/Special:Search?search=${encodedTopic}`
+          },
+          {
+            title: `Formula & Revision Cheat Sheet (PDF)`,
+            desc: "Essential exam equations and summary sheet.",
+            url: `https://www.google.com/search?q=${encodedTopic}+cheat+sheet+pdf+formula+notes`
+          }
+        ];
+        document.getElementById('materialsContainer').innerHTML = materials
+          .map(m => `
+            <a href="${m.url}" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-oat-300 bg-white p-3 hover:border-maroon-500 transition shadow-sm">
+              <h5 class="text-xs font-bold text-slate-900">${m.title}</h5>
+              <p class="text-[11px] text-slate-500 mt-0.5">${m.desc}</p>
+              <span class="text-[11px] text-maroon-700 font-semibold inline-block mt-2">Open Resource &rarr;</span>
+            </a>
+          `).join('');
+
+        loading.classList.add('hidden');
+        results.style.display = 'grid';
+        results.className = 'mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3';
+      }, 350);
+    });
+  </script>
+</body>
+</html>
